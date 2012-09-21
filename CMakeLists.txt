@@ -67,26 +67,9 @@ pkg_check_modules(GLIB_2 REQUIRED glib-2.0)
 include_directories(${GLIB_2_INCLUDE_DIRS})
 webos_add_compiler_flags(ALL ${GLIB_2_CFLAGS_OTHER})
 
-find_library(MJCORE NAMES mojocore libmojocore)
-if(MJCORE STREQUAL "MJCORE-NOTFOUND")
-	message(FATAL_ERROR "Failed to find libmojocore. Please install openwebos/db8")
-endif()
-
-find_library(MJLUNA NAMES mojoluna libmojoluna)
-if(MJLUNA STREQUAL "MJLUNA-NOTFOUND")
-	message(FATAL_ERROR "Failed to find libmojoluna.  Please install openwebos/db8")
-endif()
-
-find_library(MJDB NAMES mojodb libmojodb)
-if(MJDB STREQUAL "MJDB-NOTFOUND")
-	message(FATAL_ERROR "Failed to find mojodb. Please install openwebos/db8")
-endif()
-
-find_path(MJ_INC NAMES mojodb/core/MojErr.h)
-if(MJ_INC STREQUAL "MJ_INC-NOTFOUND")
-	message(FATAL_ERROR "Failed to find mojodb. Please install openwebos/db8")
-endif()
-include_directories(${MJ_INC}/mojodb)
+pkg_check_modules(DB8 REQUIRED db8)
+include_directories(${DB8_INCLUDE_DIRS})
+webos_add_compiler_flags(ALL ${DB8_CFLAGS_OTHER})
 
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -98,9 +81,7 @@ file(GLOB SOURCE_FILES src/*.cpp)
 add_executable(filecache ${SOURCE_FILES})
 
 target_link_libraries(filecache
-			${MJLUNA}
-			${MJCORE}
-			${MJDB}
+			${DB8_LDFLAGS}
 			${GIOMM_LDFLAGS}
 			${GBMM_LDFLAGS}
 			${JEM_LDFLAGS}
