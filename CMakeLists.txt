@@ -1,6 +1,6 @@
 # @@@LICENSE
 #
-#      Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.P.
+#      Copyright (c) 2012-2013 LG Electronics, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -91,11 +91,7 @@ target_link_libraries(filecache
 			${Boost_LIBRARIES}
 			${GLIB_2_LDFLAGS})
 
-#until upstart 1.8 is the default and webos_build_daemon is updated
-# we need to handle its new job file manually
-webos_build_configured_file(files/launch/filecache.conf SYSCONFDIR init)
-
 webos_configure_header_files(src)
-webos_build_daemon(LAUNCH files/launch.0311)
+webos_build_daemon()
 webos_build_system_bus_files()
 install(FILES files/conf/FileCache.conf DESTINATION ${WEBOS_INSTALL_WEBOS_SYSCONFDIR})

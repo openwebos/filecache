@@ -1,7 +1,6 @@
 # @@@LICENSE
 #
-#      Copyright (c) 2007-2012 Hewlett-Packard Development Company, L.P.
-#      Copyright (c) 2013 LG Electronics, Inc.
+#      Copyright (c) 2012-2013 LG Electronics, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,13 +16,12 @@
 #
 # LICENSE@@@
 
-description "Open webOS service to cache files"
+description "@WEBOS_PROJECT_SUMMARY@"
 
 start on stopped TV-is-ready
 stop on started start_update
 emits filecache-ready
 
-expect daemon
 respawn
 
 # Comment this line out to suppress logs on the console
