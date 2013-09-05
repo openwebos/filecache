@@ -33,6 +33,4 @@ pre-start script
 	fi
 end script
 
-script
-	@WEBOS_INSTALL_SBINDIR@/filecache -c {\"log\":{\"appender\":{\"type\":\"syslog\"},\"levels\":{\"default\":\"warning\"}}}
-end script
+exec @WEBOS_INSTALL_SBINDIR@/filecache -c {\"log\":{\"appender\":{\"type\":\"syslog\"},\"levels\":{\"default\":\"warning\"}}}
