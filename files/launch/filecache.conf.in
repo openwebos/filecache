@@ -18,7 +18,7 @@
 
 description "@WEBOS_PROJECT_SUMMARY@"
 
-start on minimal-boot-done
+start on datastore-init-start
 stop on started start_update
 emits filecache-ready
 
