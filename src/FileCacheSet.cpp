@@ -27,7 +27,7 @@ namespace fs = boost::filesystem;
 
 MojLogger CFileCacheSet::s_log(_T("filecache.filecacheset"));
 
-CFileCacheSet::CFileCacheSet(bool init) {
+CFileCacheSet::CFileCacheSet(bool init) : m_totalCacheSpace(0) {
 
   MojLogTrace(s_log);
 

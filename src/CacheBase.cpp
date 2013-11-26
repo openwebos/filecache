@@ -313,16 +313,17 @@ CleanupDir(const std::string& pathname, std::string& msgText) {
 
   bool success = true;
   fs::path dirname(pathname);
-  if (fs::exists(dirname)) {
-    try {
+  try {
+    if (fs::exists(dirname)) {
       fs::remove_all(dirname);
     }
-    catch (const fs::filesystem_error& ex) {
-      msgText = "CleanupDir: " + std::string(ex.what()) + " ("
-	+ ex.code().message() +")";
-      success = false;
-    }
   }
+  catch (const fs::filesystem_error& ex) {
+    msgText = "CleanupDir: " + std::string(ex.what()) + " ("
+      + ex.code().message() +")";
+    success = false;
+  }
+}
 
   return success;
 }
