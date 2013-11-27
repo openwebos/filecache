@@ -323,7 +323,6 @@ CleanupDir(const std::string& pathname, std::string& msgText) {
       + ex.code().message() +")";
     success = false;
   }
-}
 
   return success;
 }
