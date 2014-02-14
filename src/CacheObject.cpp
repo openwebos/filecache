@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -424,7 +424,6 @@ CCacheObject::UnSubscribe() {
   m_subscriptionCount--;
 
   bool suceeded = true;
-  int retVal = 0;
   const std::string pathname(GetPathname());
 
   if (m_dirType) {
@@ -440,8 +439,7 @@ CCacheObject::UnSubscribe() {
     if (!pathname.empty()) {
       // Make sure the size is correct
       struct stat buf;
-      retVal = ::stat(pathname.c_str(), &buf);
-      if (retVal != 0) {
+      if (::stat(pathname.c_str(), &buf) != 0) {
 	int savedErrno = errno;
 	MojLogError(s_log,
 		    _T("UnSubscribe: Failed to stat file '%s' (%s)."),
@@ -692,7 +690,7 @@ CCacheObject::GetPathname(bool createDir) {
 }
 
 std::string
-CCacheObject::GetDirname(const std::string pathname) {
+CCacheObject::GetDirname(const std::string& pathname) {
 
   MojLogTrace(s_log);
 

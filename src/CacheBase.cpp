@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ GetTypeNameFromPath(const std::string& baseDirName, const std::string& filePath)
 // /dir/subdir-1/.../typeName/objectid[0:m]/objectid[m+1:n].extension
 // where extension does not include a '/' or a '.'.
 const std::string
-GetDirectoryFromPath(const std::string pathname) {
+GetDirectoryFromPath(const std::string& pathname) {
   
   std::string dirpath;
   std::string::size_type endPos = pathname.rfind('/');
@@ -196,8 +196,8 @@ GetFileBasename(const char* filePath) {
 // Return the path to an cached object identified by the objectId, the
 // typeName, and the file name
 std::string
-BuildPathname(const cachedObjectId_t objectId, const std::string basePath,
-	      const std::string typeName, const std::string fileName,
+BuildPathname(const cachedObjectId_t objectId, const std::string& basePath,
+	      const std::string& typeName, const std::string& fileName,
 	      bool createDir) {
 
   if (objectId == 0) return std::string("");
@@ -274,7 +274,7 @@ GetFilesystemFileSize(const cacheSize_t size) {
 
 // call fsync on the provided file
 bool
-SyncFile(const std::string pathname, std::string& msgText) {
+SyncFile(const std::string& pathname, std::string& msgText) {
 
   bool suceeded = true;
 

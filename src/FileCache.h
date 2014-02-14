@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class CFileCache {
  public:
 
   // This constructor is used to create a new type
-  CFileCache(CFileCacheSet* cacheSet, const std::string cacheType);
+  CFileCache(CFileCacheSet* cacheSet, const std::string& cacheType);
 
   ~CFileCache();
 

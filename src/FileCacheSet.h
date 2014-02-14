@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class CFileCacheSet {
   CCacheParamValues DescribeType(const std::string& typeName);
 
   // Cleanup the cache type
-  cacheSize_t CleanupType(const std::string typeName);
+  cacheSize_t CleanupType(const std::string& typeName);
 
   // Select the object from the best choice from each cache to remove
   CFileCache* SelectCandidateToExpire(std::map<CFileCache*,

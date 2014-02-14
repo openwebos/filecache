@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ MojLogger CFileCache::s_log(_T("filecache.filecache"));
 // This constructor is used to create a new type or deserialize an
 // already constructed type
 CFileCache::CFileCache(CFileCacheSet* cacheSet, 
-		       const std::string cacheType) : m_fileCacheSet(cacheSet)
+		       const std::string& cacheType) : m_fileCacheSet(cacheSet)
 						    , m_cacheType(cacheType)
 						    , m_numObjects(0)
 						    , m_cacheSize(0)
@@ -450,7 +450,6 @@ CFileCache::Cleanup(cacheSize_t size) {
 
   MojLogTrace(s_log);
 
-  std::vector<cachedObjectId_t> cleanedIds;
   if (size < m_hiWatermark) {
     while (((m_cacheSize + size) >= m_hiWatermark) && 
 	   (CleanupCache(NULL) >= 0)) {
@@ -588,7 +587,7 @@ CFileCache::isCleanable() {
   MojLogTrace(s_log);
 
   bool retVal = true;
-  if (m_cachedObjects.size() > 0) {
+  if (!m_cachedObjects.empty()) {
     std::map<cachedObjectId_t, CCacheObject*>::const_iterator iter;
     iter = m_cachedObjects.begin();
     while(iter != m_cachedObjects.end()) {

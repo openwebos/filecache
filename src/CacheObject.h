@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class CCacheObject {
 
   CCacheObject& operator=(const CCacheObject&);
 
-  std::string GetDirname(const std::string pathname);
+  std::string GetDirname(const std::string& pathname);
   CFileCacheSet* GetFileCacheSet();
   bool CreateObject(const std::string& pathname);
   bool SetFilenameAttribute(const std::string& pathname);

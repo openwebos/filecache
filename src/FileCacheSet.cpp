@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -709,7 +709,6 @@ CFileCacheSet::ReadConfig(const std::string& configFile) {
   std::ifstream infile(configFile.c_str());
   if (infile) {
     std::string label;
-    std::set<std::string> labels;
 
     while(infile >> label) {
       if (label == s_totalCacheSpace) {
@@ -1495,10 +1494,8 @@ CFileCacheSet::WalkDirTree() {
   std::string dirName(GetCacheDirectory());
   // walk the directory dirName and call ProcessFiles on each
   // entry.
-  bool walkSuccess = true;
   try {
-    walkSuccess = FileTreeWalk(dirName);
-    if (!walkSuccess) {
+    if (!FileTreeWalk(dirName)) {
       MojLogError(s_log, _T("WalkDirTree: Failed to complete file tree walk."));
       retVal = false;
     }

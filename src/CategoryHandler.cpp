@@ -1,6 +1,6 @@
 /* @@@LICENSE
 *
-*      Copyright (c) 2007-2013 LG Electronics, Inc.
+*      Copyright (c) 2007-2014 LG Electronics, Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -85,7 +85,6 @@ CategoryHandler::DefineType(MojServiceMessage* msg, MojObject& payload) {
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString typeName;
   MojInt64 loWatermark = 0;
   MojInt64 hiWatermark = 0;
@@ -94,7 +93,7 @@ CategoryHandler::DefineType(MojServiceMessage* msg, MojObject& payload) {
   MojInt64 lifetime = 0;
   bool dirType = false;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("DefineType: new type '%s' to be defined."),
 	      typeName.data());
@@ -201,7 +200,6 @@ CategoryHandler::ChangeType(MojServiceMessage* msg, MojObject& payload) {
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString typeName;
   MojInt64 loWatermark = 0;
   MojInt64 hiWatermark = 0;
@@ -209,7 +207,7 @@ CategoryHandler::ChangeType(MojServiceMessage* msg, MojObject& payload) {
   MojInt64 cost = 0;
   MojInt64 lifetime = 0;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("ChangeType: existing type '%s' to be changed."),
 	      typeName.data());
@@ -267,11 +265,10 @@ CategoryHandler::DeleteType(MojServiceMessage* msg, MojObject& payload) {
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString typeName;
   MojInt64 freedSpace = 0;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("DeleteType: existing type '%s' to be deleted."),
 	      typeName.data());
@@ -300,10 +297,9 @@ CategoryHandler::DescribeType(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString typeName;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("DescribeType: existing type '%s' to be queried."),
 	      typeName.data());
@@ -347,13 +343,12 @@ CategoryHandler::InsertCacheObject(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString typeName, fileName;
   MojInt64 size = 0;
   MojInt64 cost = 0;
   MojInt64 lifetime = 0;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   err = payload.getRequired(_T("fileName"), fileName);
   MojErrCheck(err);
@@ -451,11 +446,10 @@ CategoryHandler::ResizeCacheObject(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString pathName;
   MojInt64 newSize;
 
-  err = payload.getRequired(_T("pathName"), pathName);
+  MojErr err = payload.getRequired(_T("pathName"), pathName);
   MojErrCheck(err);
 
   err = payload.getRequired(_T("newSize"), newSize);
@@ -518,11 +512,10 @@ CategoryHandler::ExpireCacheObject(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString pathName;
   std::string msgText;
 
-  err = payload.getRequired(_T("pathName"), pathName);
+  MojErr err = payload.getRequired(_T("pathName"), pathName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("ExpireCacheObject: expiring object '%s'."),
 	      pathName.data());
@@ -825,7 +818,6 @@ CategoryHandler::GetCacheStatus(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   cacheSize_t numTypes = 0;
   cacheSize_t size = 0;
   cacheSize_t space = 0;
@@ -834,7 +826,7 @@ CategoryHandler::GetCacheStatus(MojServiceMessage* msg,
   numTypes = m_fileCacheSet->GetCacheStatus(&size, &numObjs, &space);
 
   MojObject reply;
-  err = reply.putInt(_T("numTypes"), (MojInt64) numTypes);
+  MojErr err = reply.putInt(_T("numTypes"), (MojInt64) numTypes);
   MojErrCheck(err);
   err = reply.putInt(_T("size"), (MojInt64) size);
   MojErrCheck(err);
@@ -858,13 +850,12 @@ CategoryHandler::GetCacheTypeStatus(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   cacheSize_t size = 0;
   paramValue_t numObjs = 0;
 
   MojString typeName;
 
-  err = payload.getRequired(_T("typeName"), typeName);
+  MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("GetCacheTypeStatus: getting status for type '%s'."),
 	      typeName.data());
@@ -899,10 +890,9 @@ CategoryHandler::GetCacheObjectSize(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString pathName;
 
-  err = payload.getRequired(_T("pathName"), pathName);
+  MojErr err = payload.getRequired(_T("pathName"), pathName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("GetCacheObjectSize: getting size for '%s'."),
 	      pathName.data());
@@ -933,10 +923,9 @@ CategoryHandler::GetCacheObjectFilename(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojString pathName;
 
-  err = payload.getRequired(_T("pathName"), pathName);
+  MojErr err = payload.getRequired(_T("pathName"), pathName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("GetCacheObjectFilename: getting filename for '%s'."),
 	      pathName.data());
@@ -998,10 +987,9 @@ CategoryHandler::GetVersion(MojServiceMessage* msg,
 
   MojLogTrace(s_log);
 
-  MojErr err = MojErrNone;
   MojObject reply;
 
-  err = reply.putString(_T("version"), s_InterfaceVersion.c_str());
+  MojErr err = reply.putString(_T("version"), s_InterfaceVersion.c_str());
   MojErrCheck(err);
   err = msg->replySuccess(reply);
   MojErrCheck(err);
@@ -1021,7 +1009,7 @@ CategoryHandler::WorkerHandler() {
   // For each subscribed object, if it's still being written, do a
   // validity check
   for (SubscriptionVec::const_iterator it = m_subscribers.begin();
-       it != m_subscribers.end(); it++) {
+       it != m_subscribers.end(); ++it) {
     MojLogDebug(s_log, _T("WorkerHandler: Validating subscribed object '%s'."),
 		(*it)->GetPathName().data());
     const cachedObjectId_t objId =
@@ -1061,7 +1049,7 @@ CategoryHandler::TimerCallback(void* data) {
 
   MojLogTrace(s_log);
 
-  CategoryHandler* self = (CategoryHandler*) data;
+  CategoryHandler* self = static_cast<CategoryHandler*>(data);
   self->WorkerHandler();
 
   return true;
@@ -1072,7 +1060,7 @@ CategoryHandler::CleanerCallback(void* data) {
 
   MojLogTrace(s_log);
 
-  CategoryHandler* self = (CategoryHandler*) data;
+  CategoryHandler* self = static_cast<CategoryHandler*>(data);
   self->CleanerHandler();
 
   // return false here as this is a one shot
