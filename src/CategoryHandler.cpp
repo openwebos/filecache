@@ -339,7 +339,7 @@ CategoryHandler::DescribeType(MojServiceMessage* msg,
 
 MojErr
 CategoryHandler::InsertCacheObject(MojServiceMessage* msg,
-				   MojObject& payload) {
+                                   MojObject& payload) {
 
   MojLogTrace(s_log);
 
@@ -347,41 +347,82 @@ CategoryHandler::InsertCacheObject(MojServiceMessage* msg,
   MojInt64 size = 0;
   MojInt64 cost = 0;
   MojInt64 lifetime = 0;
+  bool subscribed = false;
 
   MojErr err = payload.getRequired(_T("typeName"), typeName);
   MojErrCheck(err);
   err = payload.getRequired(_T("fileName"), fileName);
   MojErrCheck(err);
   MojLogDebug(s_log, _T("InsertCacheObject: inserting object into type '%s' for file '%s',"),
-	      typeName.data(), fileName.data());
-
-  payload.get(_T("size"), size);
-  payload.get(_T("cost"), cost);
-  payload.get(_T("lifetime"), lifetime);
-  MojLogDebug(s_log,
-	      _T("InsertCacheObject: params: size = '%lld', cost = '%lld', lifetime = '%lld'."),
-	      size, cost, lifetime);
+              typeName.data(), fileName.data());
 
   std::string msgText;
   if (m_fileCacheSet->TypeExists(std::string(typeName.data()))) {
     CCacheParamValues params =
       m_fileCacheSet->DescribeType(std::string(typeName.data()));
-	// if needed, overwrite values with defaults
-    if (size == 0) size = params.GetSize();
-    if (cost == 0) cost = params.GetCost();
-    if (lifetime == 0) lifetime = params.GetLifetime();
-    if (size <= 0) {
-      msgText = "InsertCacheObject: Invalid params: size must be greater than 0.";
-    } else if ((size <= GetFilesystemFileSize(1)) &&
-	       m_fileCacheSet->isTypeDirType(typeName.data())) {
-      msgText = "InsertCacheObject: Invalid params: size must be greater than 1 block when dirType = true.";
-    } else if ((cost < 0) || (cost > 100)) {
-      msgText = "InsertCacheObject: Invalid params: cost must be in the range of 0 to 100.";
-    } else if (lifetime < 0) {
-      msgText = "InsertCacheObject: Invalid params: lifetime must not be negative.";
-    } else if (fileName.find(_T("/")) != MojInvalidIndex) {
-      msgText = "InsertCacheObject: Invalid params: fileName must not contain a '/'.";
-    }
+    do {
+      MojObject param;
+
+      if (payload.get(_T("subscribe"), param)) {
+        if (param.type() == MojObject::TypeBool) {
+          subscribed = param.boolValue();
+        } else {
+          msgText = "InsertCacheObject: Invalid params: subscribe must be boolean.";
+          break;
+        }
+      }
+
+      // if needed, overwrite values with defaults
+      if (payload.get(_T("size"), param)) {
+        if (param.type() == MojObject::TypeInt) {
+          size = param.intValue();
+        } else {
+          msgText = "InsertCacheObject: Invalid params: size must be integer.";
+          break;
+        }
+      } else {
+        size = params.GetSize();
+      }
+
+      if (payload.get(_T("cost"), param)) {
+        if (param.type() == MojObject::TypeInt) {
+          cost = param.intValue();
+        } else {
+          msgText = "InsertCacheObject: Invalid params: cost must be integer.";
+          break;
+        }
+      } else {
+        cost = params.GetCost();
+      }
+
+      if (payload.get(_T("lifetime"), param)) {
+        if (param.type() == MojObject::TypeInt) {
+          lifetime = param.intValue();
+        } else {
+          msgText = "InsertCacheObject: Invalid params: lifetime must be integer.";
+          break;
+        }
+      } else {
+        lifetime = params.GetLifetime();
+      }
+
+      MojLogDebug(s_log,
+                  _T("InsertCacheObject: params: size = '%lld', cost = '%lld', lifetime = '%lld'."),
+                  size, cost, lifetime);
+
+      if (size <= 0) {
+        msgText = "InsertCacheObject: Invalid params: size must be greater than 0.";
+      } else if ((size <= GetFilesystemFileSize(1)) &&
+        m_fileCacheSet->isTypeDirType(typeName.data())) {
+        msgText = "InsertCacheObject: Invalid params: size must be greater than 1 block when dirType = true.";
+      } else if ((cost < 0) || (cost > 100)) {
+        msgText = "InsertCacheObject: Invalid params: cost must be in the range of 0 to 100.";
+      } else if (lifetime < 0) {
+        msgText = "InsertCacheObject: Invalid params: lifetime must not be negative.";
+      } else if (fileName.find(_T("/")) != MojInvalidIndex) {
+        msgText = "InsertCacheObject: Invalid params: fileName must not contain a '/'.";
+      }
+    } while (false);
   } else {
     msgText = "InsertCacheObject: No type '" + std::string(typeName.data())
       + "' defined.";
@@ -392,40 +433,39 @@ CategoryHandler::InsertCacheObject(MojServiceMessage* msg,
   } else {
     cachedObjectId_t objId =
       m_fileCacheSet->InsertCacheObject(msgText, std::string(typeName.data()),
-					std::string(fileName.data()),
-					(cacheSize_t) size,
-					(paramValue_t) cost,
-					(paramValue_t) lifetime);
+                                        std::string(fileName.data()),
+                                        (cacheSize_t) size,
+                                        (paramValue_t) cost,
+                                        (paramValue_t) lifetime);
 
     MojLogDebug(s_log, _T("InsertCacheObject: new object id = %llu."), objId);
     if (objId > 0) {
-      bool subscribed = false;
       MojString pathName;
       MojObject reply;
-      if (payload.get(_T("subscribe"), subscribed) && subscribed) {
-	const std::string fpath(m_fileCacheSet->SubscribeCacheObject(msgText, objId));
-	if (!fpath.empty()) {
-	  err = pathName.assign(fpath.c_str());
-	  MojErrCheck(err);
-	  MojRefCountedPtr<Subscription> cancelHandler(new Subscription(*this,
-									msg,
-									pathName));
-	  MojAllocCheck(cancelHandler.get());
-	  m_subscribers.push_back(cancelHandler.get());
-	  MojLogDebug(s_log, _T("InsertCacheObject: subscribed new object '%s'."),
-		      fpath.c_str());
-	  err = reply.putBool(_T("subscribed"), true);
-	  MojErrCheck(err);
-	} else if (!msgText.empty()) {
-	  msgText = "SubscribeCacheObject: " + msgText;
-	  MojLogError(s_log, _T("%s"), msgText.c_str());
-	}
+      if (subscribed) {
+        const std::string fpath(m_fileCacheSet->SubscribeCacheObject(msgText, objId));
+        if (!fpath.empty()) {
+          err = pathName.assign(fpath.c_str());
+          MojErrCheck(err);
+          MojRefCountedPtr<Subscription> cancelHandler(new Subscription(*this,
+                                                       msg,
+                                                       pathName));
+          MojAllocCheck(cancelHandler.get());
+          m_subscribers.push_back(cancelHandler.get());
+          MojLogDebug(s_log, _T("InsertCacheObject: subscribed new object '%s'."),
+                      fpath.c_str());
+          err = reply.putBool(_T("subscribed"), true);
+          MojErrCheck(err);
+        } else if (!msgText.empty()) {
+          msgText = "SubscribeCacheObject: " + msgText;
+          MojLogError(s_log, _T("%s"), msgText.c_str());
+        }
       } else {
-	const std::string dirBase(m_fileCacheSet->GetBaseDirName());
-	err = pathName.assign(BuildPathname(objId, dirBase,
-					    std::string(typeName.data()),
-					    std::string(fileName.data())).c_str());
-	MojErrCheck(err);
+        const std::string dirBase(m_fileCacheSet->GetBaseDirName());
+        err = pathName.assign(BuildPathname(objId, dirBase,
+                              std::string(typeName.data()),
+                              std::string(fileName.data())).c_str());
+        MojErrCheck(err);
       }
       err = reply.putString(_T("pathName"), pathName);
       MojErrCheck(err);
